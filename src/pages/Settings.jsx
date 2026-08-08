@@ -156,6 +156,30 @@ export default function Settings() {
 
       <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
         <h3 style={{ margin: 0, marginBottom: '15px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Info size={18} /> App Installation
+        </h3>
+        <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5', marginBottom: '15px' }}>
+          Missed the prompt? Install this web application directly to your device for the native PWA experience.
+        </p>
+        <button 
+          onClick={async () => {
+            if (window.deferredPrompt) {
+              window.deferredPrompt.prompt();
+              const { outcome } = await window.deferredPrompt.userChoice;
+              if (outcome === 'accepted') window.deferredPrompt = null;
+            } else {
+              alert("Your browser doesn't support direct installation or the app is already installed! (Try 'Add to Home screen' from your browser menu)");
+            }
+          }} 
+          className="btn" 
+          style={{ width: '100%', padding: '10px', borderRadius: '8px' }}
+        >
+          Install Web Application
+        </button>
+      </div>
+
+      <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
+        <h3 style={{ margin: 0, marginBottom: '15px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Code size={18} /> About Developer
         </h3>
         <p className="text-muted" style={{ margin: 0, fontSize: '14px', lineHeight: '1.5' }}>
