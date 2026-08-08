@@ -5,10 +5,10 @@ import { LocalDB } from '../config/localStorage';
 
 export default function Settings() {
   const { currentUser, logout } = useAuth();
-  const [profile, setProfile] = useState(LocalDB.getProfile());
+  const [profile, setProfile] = useState(() => LocalDB.getProfile() || { name: 'User', isDarkMode: true });
   const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(profile.name || '');
-  const [editAge, setEditAge] = useState(profile.age || '');
+  const [editName, setEditName] = useState(profile?.name || '');
+  const [editAge, setEditAge] = useState(profile?.age || '');
   const fileInputRef = useRef(null);
 
   const [isInstalled, setIsInstalled] = useState(() => {
@@ -34,9 +34,9 @@ export default function Settings() {
   };
 
   const toggleTheme = () => {
-    const newDarkMode = !profile.isDarkMode;
+    const newDarkMode = !(profile?.isDarkMode);
     LocalDB.updateProfile({ isDarkMode: newDarkMode });
-    setProfile(LocalDB.getProfile());
+    setProfile(LocalDB.getProfile() || { name: 'User', isDarkMode: newDarkMode });
     if (newDarkMode) {
       document.documentElement.setAttribute('data-theme', 'dark');
     } else {
@@ -50,7 +50,7 @@ export default function Settings() {
     setIsEditing(false);
   };
 
-  const startYear = new Date(profile.appStartDate).getFullYear();
+  const startYear = profile?.appStartDate ? new Date(profile.appStartDate).getFullYear() : new Date().getFullYear();
 
   return (
     <div className="main-content">
@@ -59,8 +59,8 @@ export default function Settings() {
       <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => fileInputRef.current.click()}>
-              {profile.profilePic ? (
+            <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => fileInputRef.current?.click()}>
+              {profile?.profilePic ? (
                 <img src={profile.profilePic} alt="Profile" style={{ width: '50px', height: '50px', borderRadius: '25px', objectFit: 'cover' }} />
               ) : (
                 <div style={{ background: 'var(--primary-color)', width: '50px', height: '50px', borderRadius: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -77,7 +77,7 @@ export default function Settings() {
                 </div>
               ) : (
                 <>
-                  <h2 style={{ margin: 0, fontSize: '18px' }}>{profile.name} {profile.age ? `(${profile.age})` : ''}</h2>
+                  <h2 style={{ margin: 0, fontSize: '18px' }}>{profile?.name || 'User'} {profile?.age ? `(${profile.age})` : ''}</h2>
                   <p className="text-muted" style={{ margin: 0, fontSize: '14px' }}>{currentUser?.email}</p>
                 </>
               )}
@@ -160,7 +160,7 @@ export default function Settings() {
           <Code size={18} /> Theme Settings
         </h3>
         <button onClick={toggleTheme} className="btn-outline" style={{ width: '100%', padding: '10px', borderRadius: '8px' }}>
-          Toggle {profile.isDarkMode ? 'Light' : 'Dark'} Mode
+          Toggle {profile?.isDarkMode ? 'Light' : 'Dark'} Mode
         </button>
       </div>
 

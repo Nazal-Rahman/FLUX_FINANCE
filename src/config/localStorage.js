@@ -31,7 +31,10 @@ initStorage();
 
 export const LocalDB = {
   // --- Transactions ---
-  getTransactions: () => JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS)),
+  getTransactions: () => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS)) || []; }
+    catch { return []; }
+  },
   
   addTransaction: (amount, type, category, note = '', module = 'general') => {
     const txs = LocalDB.getTransactions();
@@ -56,7 +59,10 @@ export const LocalDB = {
   },
 
   // --- Reports (Sunday Logic) ---
-  getWeeklyReports: () => JSON.parse(localStorage.getItem(STORAGE_KEYS.WEEKLY_REPORTS)),
+  getWeeklyReports: () => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.WEEKLY_REPORTS)) || []; }
+    catch { return []; }
+  },
   
   generateSundayReport: () => {
     const now = new Date();
@@ -98,14 +104,20 @@ export const LocalDB = {
   },
 
   // --- Profile ---
-  getProfile: () => JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_PROFILE)),
+  getProfile: () => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_PROFILE)); }
+    catch { return null; }
+  },
   updateProfile: (updates) => {
     const profile = { ...LocalDB.getProfile(), ...updates };
     localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
   },
 
   // --- Vault ---
-  getVault: () => JSON.parse(localStorage.getItem(STORAGE_KEYS.COIN_VAULT)),
+  getVault: () => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.COIN_VAULT)) || {}; }
+    catch { return {}; }
+  },
   updateVault: (denomination, countDelta) => {
     const vault = LocalDB.getVault();
     vault[denomination] = Math.max(0, (vault[denomination] || 0) + countDelta);
