@@ -33,7 +33,7 @@ export const LocalDB = {
   // --- Transactions ---
   getTransactions: () => JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS)),
   
-  addTransaction: (amount, type, category, note = '') => {
+  addTransaction: (amount, type, category, note = '', module = 'general') => {
     const txs = LocalDB.getTransactions();
     const newTx = {
       id: uuidv4(),
@@ -41,6 +41,7 @@ export const LocalDB = {
       type, // 'income' or 'expense'
       category,
       note,
+      module,
       date: new Date().toISOString()
     };
     txs.push(newTx);

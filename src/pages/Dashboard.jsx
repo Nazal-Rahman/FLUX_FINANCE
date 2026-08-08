@@ -12,7 +12,14 @@ export default function Dashboard() {
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('expense');
   const [category, setCategory] = useState('Food');
+  const [customCategory, setCustomCategory] = useState('');
   const [note, setNote] = useState('');
+  const [showGraphIntro, setShowGraphIntro] = useState(() => !localStorage.getItem('flux_graph_intro_seen'));
+
+  const handleSkipGraphIntro = () => {
+    localStorage.setItem('flux_graph_intro_seen', 'true');
+    setShowGraphIntro(false);
+  };
 
   const categories = [
     'Food', 
@@ -41,25 +48,33 @@ export default function Dashboard() {
     setBalance(total);
   };
 
-  const collegeCategories = ['Books', 'Lab Materials', 'Exam Fees', 'Project Expenses'];
+  const collegeCategories = ['Books', 'Lab Materials', 'Exam Fees', 'Project Expenses', 'Other'];
   const collegeTotal = transactions
-    .filter(tx => tx.type === 'expense' && collegeCategories.includes(tx.category))
+    .filter(tx => (tx.type === 'expense' && collegeCategories.includes(tx.category)) || tx.module === 'college')
     .reduce((acc, tx) => acc + tx.amount, 0);
 
-  const officeCategories = ['Office Income', 'Office Expense', 'Software/Tools', 'Business Travel'];
+  const officeCategories = ['Office Income', 'Office Expense', 'Software/Tools', 'Business Travel', 'Other'];
   const officeTotal = transactions
-    .filter(tx => officeCategories.includes(tx.category))
+    .filter(tx => officeCategories.includes(tx.category) || tx.module === 'office')
     .reduce((acc, tx) => tx.type === 'income' ? acc + tx.amount : acc - tx.amount, 0);
 
   const handleAddTransaction = (e) => {
     e.preventDefault();
     if (!amount) return;
-    LocalDB.addTransaction(amount, type, category, note);
+    
+    let finalCategory = category;
+    if (category === 'Other' && customCategory.trim()) {
+      finalCategory = customCategory.trim();
+    }
+    
+    const module = isCollegeMode ? 'college' : isOfficeMode ? 'office' : 'general';
+    LocalDB.addTransaction(amount, type, finalCategory, note, module);
     setShowAddModal(false);
     setIsCollegeMode(false);
     setIsOfficeMode(false);
     setAmount('');
     setNote('');
+    setCustomCategory('');
     loadData();
   };
 
@@ -182,12 +197,34 @@ export default function Dashboard() {
               <select value={category} onChange={e=>setCategory(e.target.value)}>
                 {(isCollegeMode ? collegeCategories : isOfficeMode ? officeCategories : categories).map(c => <option key={c} value={c} style={{ color: '#000' }}>{c}</option>)}
               </select>
+              {category === 'Other' && (
+                <input type="text" placeholder="Enter custom category" value={customCategory} onChange={e=>setCustomCategory(e.target.value)} required />
+              )}
               <input type="text" placeholder="Note (optional)" value={note} onChange={e=>setNote(e.target.value)} />
               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 <button type="button" className="btn btn-outline" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }} onClick={() => { setShowAddModal(false); setIsCollegeMode(false); setIsOfficeMode(false); }}>Cancel</button>
                 <button type="submit" className="btn">Save</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showGraphIntro && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div className="glass-card" style={{ maxWidth: '400px', width: '100%', border: '1px solid var(--primary-color)' }}>
+            <h2 style={{ margin: '0 0 15px 0', color: 'var(--primary-color)', textAlign: 'center' }}>Understanding Your Graphs</h2>
+            <p className="text-muted" style={{ fontSize: '14px', lineHeight: '1.6', marginBottom: '15px' }}>
+              Flux Finance uses intelligent visual graphs to help you understand your spending at a glance:
+            </p>
+            <ul style={{ paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.6', marginBottom: '20px' }}>
+              <li style={{ marginBottom: '8px' }}><strong>Cash Flow Pie Chart (Here):</strong> Shows the simple ratio between your total Income and total Expenses.</li>
+              <li style={{ marginBottom: '8px' }}><strong>Expense Breakdown Ring Chart (Reports Tab):</strong> Maps all your all-time expenses color-coded by specific categories so you know exactly where your money goes.</li>
+              <li style={{ marginBottom: '8px' }}><strong>Weekly Bar Chart (Reports Tab):</strong> Compares your Income vs Expense visually across recent weeks.</li>
+            </ul>
+            <button onClick={handleSkipGraphIntro} className="btn" style={{ width: '100%' }}>
+              Got it!
+            </button>
           </div>
         </div>
       )}

@@ -95,9 +95,16 @@ export default function Settings() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           
           <div style={{ paddingBottom: '10px', borderBottom: '1px solid var(--glass-border)' }}>
-            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>🔒 100% Local Privacy</h4>
+            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>📱 Native Web App Experience</h4>
             <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              Your financial data is saved directly on your phone's local storage. We use Firebase only for logging you in securely. None of your transactions are uploaded to the internet.
+              For the best experience, open your browser menu and tap <strong>"Add to Home Screen"</strong>. This web application will then behave exactly like a native app on your phone!
+            </p>
+          </div>
+
+          <div style={{ paddingBottom: '10px', borderBottom: '1px solid var(--glass-border)' }}>
+            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>🔒 Semi-Offline Privacy</h4>
+            <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
+              We use Firebase only for logging you in securely. All your financial data is saved directly on your phone's local storage and is never uploaded to the internet.
             </p>
           </div>
 
@@ -123,9 +130,15 @@ export default function Settings() {
           </div>
 
           <div>
-            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>📊 Intelligent Weekly Reports</h4>
+            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>📊 Intelligent Weekly Reports & Graphs</h4>
             <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              The app automatically calculates your past week's spending every Sunday. Even if you forget to open the app on Sunday, it will smartly generate the report the next time you open it during the week.
+              The app automatically calculates your past week's spending every Sunday. Even if you forget to open the app on Sunday, it will smartly generate the report the next time you open it.
+              <br/><br/>
+              <strong>• Cash Flow Pie Chart (Home):</strong> Shows the simple ratio between your total Income and total Expenses at a glance.
+              <br/>
+              <strong>• Expense Breakdown Ring Chart (Reports):</strong> Maps all your all-time expenses color-coded by specific categories so you know exactly where your money goes.
+              <br/>
+              <strong>• Weekly Bar Chart (Reports):</strong> Compares your Income vs Expense visually across recent weeks.
             </p>
           </div>
           
@@ -147,7 +160,12 @@ export default function Settings() {
         </h3>
         <p className="text-muted" style={{ margin: 0, fontSize: '14px', lineHeight: '1.5' }}>
           Developed by <strong>NAZAL RAHMAN</strong><br/>
-          <span style={{ fontSize: '12px' }}>(fluxifydev)</span>
+          <span style={{ fontSize: '12px' }}>(fluxifydev)</span><br/>
+          <span style={{ display: 'inline-block', marginTop: '10px', lineHeight: '1.8' }}>
+            Got suggestions? WhatsApp me: <a href="https://wa.me/919207842646" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 'bold' }}>9207842646</a>
+            <br/>
+            or DM me: <a href="https://instagram.com/nazzalll___" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 'bold' }}>@nazzalll___</a>
+          </span>
         </p>
       </div>
 

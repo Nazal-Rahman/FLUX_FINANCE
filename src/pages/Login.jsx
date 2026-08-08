@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
 
 export default function Login() {
@@ -9,9 +9,18 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showIntro] = useState(() => !localStorage.getItem('flux_intro_seen'));
   
   const { login, signup, googleSignIn } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (showIntro) {
+      navigate('/welcome', { replace: true });
+    }
+  }, [showIntro, navigate]);
+
+  if (showIntro) return null;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -45,13 +54,13 @@ export default function Login() {
 
   return (
     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100vh' }}>
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <Wallet size={64} color="#38BDF8" style={{ marginBottom: '10px' }} />
+      <div style={{ textAlign: 'center', marginBottom: '40px', zIndex: 10 }}>
+        <img src="/logo.png" alt="Flux Finance Logo" style={{ width: '64px', height: '64px', marginBottom: '10px', objectFit: 'contain' }} />
         <h1>Flux Finance</h1>
-        <p className="text-muted">Manage your wealth offline-first</p>
+        <p className="text-muted">Manage your wealth (Semi-Offline Web App)</p>
       </div>
 
-      <div className="glass-card">
+      <div className="glass-card" style={{ zIndex: 10, position: 'relative' }}>
         <h2 style={{ textAlign: 'center' }}>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
         {error && <div className="text-danger" style={{ marginBottom: '15px', textAlign: 'center', fontSize: '14px', background: 'rgba(244,63,94,0.1)', padding: '10px', borderRadius: '8px' }}>{error}</div>}
         
