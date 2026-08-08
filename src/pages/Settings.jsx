@@ -11,16 +11,6 @@ export default function Settings() {
   const [editAge, setEditAge] = useState(profile?.age || '');
   const fileInputRef = useRef(null);
 
-  const [isInstalled, setIsInstalled] = useState(() => {
-    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-  });
-
-  useEffect(() => {
-    const handleAppInstalled = () => setIsInstalled(true);
-    window.addEventListener('appinstalled', handleAppInstalled);
-    return () => window.removeEventListener('appinstalled', handleAppInstalled);
-  }, []);
-
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -164,34 +154,31 @@ export default function Settings() {
         </button>
       </div>
 
-      {!isInstalled && (
-        <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
-          <h3 style={{ margin: 0, marginBottom: '15px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Info size={18} /> App Installation
-          </h3>
-          <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5', marginBottom: '15px' }}>
-            Missed the prompt? Install this web application directly to your device for the native PWA experience.
-          </p>
-          <button 
-            onClick={async () => {
-              if (window.deferredPrompt) {
-                window.deferredPrompt.prompt();
-                const { outcome } = await window.deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                  window.deferredPrompt = null;
-                  setIsInstalled(true);
-                }
-              } else {
-                alert("Your browser doesn't support direct installation or the app is already installed! (Try 'Add to Home screen' from your browser menu)");
+      <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
+        <h3 style={{ margin: 0, marginBottom: '15px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Info size={18} /> App Installation
+        </h3>
+        <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5', marginBottom: '15px' }}>
+          Missed the prompt? Install this web application directly to your device for the native PWA experience.
+        </p>
+        <button 
+          onClick={async () => {
+            if (window.deferredPrompt) {
+              window.deferredPrompt.prompt();
+              const { outcome } = await window.deferredPrompt.userChoice;
+              if (outcome === 'accepted') {
+                window.deferredPrompt = null;
               }
-            }} 
-            className="btn" 
-            style={{ width: '100%', padding: '10px', borderRadius: '8px' }}
-          >
-            Install Web Application
-          </button>
-        </div>
-      )}
+            } else {
+              alert("Your browser doesn't support direct installation or the app is already installed! (Try 'Add to Home screen' from your browser menu)");
+            }
+          }} 
+          className="btn" 
+          style={{ width: '100%', padding: '10px', borderRadius: '8px' }}
+        >
+          Install Web Application
+        </button>
+      </div>
 
       <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
         <h3 style={{ margin: 0, marginBottom: '15px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
