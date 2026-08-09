@@ -7,6 +7,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LocalDB } from './config/localStorage';
 import BottomNav from './components/BottomNav';
 import Welcome from './pages/Welcome';
 import Login from './pages/Login';
@@ -15,15 +16,28 @@ import Timeline from './pages/Timeline';
 import Reports from './pages/Reports';
 import Vault from './pages/Vault';
 import Settings from './pages/Settings';
+import Onboarding from './pages/Onboarding';
+import Analyzer from './pages/Analyzer';
+import Guide from './pages/Guide';
 
-function PrivateRoute({ children }) {
+function PrivateRoute({ children, hideNav }) {
   const { currentUser } = useAuth();
-  return currentUser ? (
+  const profile = LocalDB.getProfile();
+  
+  if (!currentUser) return <Navigate to="/login" />;
+  
+  const isMissingInfo = profile && (!profile.age || !profile.persona);
+  
+  if (isMissingInfo && !hideNav) {
+    return <Navigate to="/onboarding" />;
+  }
+
+  return (
     <>
       {children}
-      <BottomNav />
+      {!hideNav && <BottomNav />}
     </>
-  ) : <Navigate to="/login" />;
+  );
 }
 
 export default function App() {
@@ -33,11 +47,14 @@ export default function App() {
         <Routes>
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/onboarding" element={<PrivateRoute hideNav={true}><Onboarding /></PrivateRoute>} />
           <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/timeline" element={<PrivateRoute><Timeline /></PrivateRoute>} />
           <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
           <Route path="/vault" element={<PrivateRoute><Vault /></PrivateRoute>} />
           <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+          <Route path="/analyzer" element={<PrivateRoute><Analyzer /></PrivateRoute>} />
+          <Route path="/guide" element={<PrivateRoute><Guide /></PrivateRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

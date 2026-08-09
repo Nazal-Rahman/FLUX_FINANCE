@@ -122,5 +122,14 @@ export const LocalDB = {
     const vault = LocalDB.getVault();
     vault[denomination] = Math.max(0, (vault[denomination] || 0) + countDelta);
     localStorage.setItem(STORAGE_KEYS.COIN_VAULT, JSON.stringify(vault));
+  },
+
+  // --- Reset ---
+  clearAll: () => {
+    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+    localStorage.removeItem('flux_intro_seen');
+    localStorage.removeItem('flux_graph_intro_seen');
+    localStorage.removeItem('flux_analyzer_intro');
+    localStorage.removeItem('flux_starting_balance');
   }
 };

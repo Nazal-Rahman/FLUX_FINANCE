@@ -1,14 +1,17 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Code, Database, Info, Edit2, Save } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { LogOut, User, Code, Database, Info, Edit2, Save, BookOpen, AlertTriangle, Trash2 } from 'lucide-react';
 import { LocalDB } from '../config/localStorage';
 
 export default function Settings() {
   const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(() => LocalDB.getProfile() || { name: 'User', isDarkMode: true });
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(profile?.name || '');
   const [editAge, setEditAge] = useState(profile?.age || '');
+  const [showFactoryReset, setShowFactoryReset] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleImageUpload = (e) => {
@@ -38,6 +41,18 @@ export default function Settings() {
     LocalDB.updateProfile({ name: editName, age: editAge });
     setProfile(LocalDB.getProfile());
     setIsEditing(false);
+  };
+
+  const handleFactoryReset = async () => {
+    try {
+      LocalDB.clearAll();
+      await currentUser.delete();
+    } catch (e) {
+      console.error(e);
+      // Even if user.delete() fails (e.g. requires recent login), we should still logout and clear DB.
+    } finally {
+      logout();
+    }
   };
 
   const startYear = profile?.appStartDate ? new Date(profile.appStartDate).getFullYear() : new Date().getFullYear();
@@ -89,60 +104,11 @@ export default function Settings() {
           <Info size={18} /> Feature Guide & Uses
         </h3>
         <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.6', marginBottom: '15px' }}>
-          Flux Finance is designed with privacy and intelligence in mind. Here is how everything works:
+          Flux Finance is designed with privacy and intelligence in mind. It includes powerful features like the Leakage Tracker, Monthly History, and separate modules tailored for Students and Working Professionals.
         </p>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          
-          <div style={{ paddingBottom: '10px', borderBottom: '1px solid var(--glass-border)' }}>
-            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>📱 Native Web App Experience</h4>
-            <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              For the best experience, open your browser menu and tap <strong>"Add to Home Screen"</strong>. This web application will then behave exactly like a native app on your phone!
-            </p>
-          </div>
-
-          <div style={{ paddingBottom: '10px', borderBottom: '1px solid var(--glass-border)' }}>
-            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>🔒 Semi-Offline Privacy</h4>
-            <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              We use Firebase only for logging you in securely. All your financial data is saved directly on your phone's local storage and is never uploaded to the internet.
-            </p>
-          </div>
-
-          <div style={{ paddingBottom: '10px', borderBottom: '1px solid var(--glass-border)' }}>
-            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>🎓 College Finance Module</h4>
-            <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              A dedicated section to track academic expenses (Books, Lab Materials, Exam Fees). It keeps your college expenses completely separate from your general cash flow so you know exactly how much your education costs.
-            </p>
-          </div>
-
-          <div style={{ paddingBottom: '10px', borderBottom: '1px solid var(--glass-border)' }}>
-            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>🏢 Office Finance Module</h4>
-            <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              Designed for working professionals. Track your salary/income, business travel, and software subscriptions separately. It calculates your net office balance automatically.
-            </p>
-          </div>
-
-          <div style={{ paddingBottom: '10px', borderBottom: '1px solid var(--glass-border)' }}>
-            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>🪙 Coin Vault</h4>
-            <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              A digital piggy bank! Track the physical ₹1, ₹2, ₹5, ₹10, and ₹20 coins you save in real life. It calculates your total physical coin savings instantly.
-            </p>
-          </div>
-
-          <div>
-            <h4 style={{ margin: '0 0 5px 0', fontSize: '14px', color: 'var(--text-primary)' }}>📊 Intelligent Weekly Reports & Graphs</h4>
-            <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              The app automatically calculates your past week's spending every Sunday. Even if you forget to open the app on Sunday, it will smartly generate the report the next time you open it.
-              <br/><br/>
-              <strong>• Cash Flow Pie Chart (Home):</strong> Shows the simple ratio between your total Income and total Expenses at a glance.
-              <br/>
-              <strong>• Expense Breakdown Ring Chart (Reports):</strong> Maps all your all-time expenses color-coded by specific categories so you know exactly where your money goes.
-              <br/>
-              <strong>• Weekly Bar Chart (Reports):</strong> Compares your Income vs Expense visually across recent weeks.
-            </p>
-          </div>
-          
-        </div>
+        <button onClick={() => navigate('/guide')} className="btn" style={{ width: '100%', padding: '12px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <BookOpen size={18} /> Read Full Guide & Usage
+        </button>
       </div>
 
       <div className="glass-card" style={{ padding: '20px', marginBottom: '20px' }}>
@@ -195,9 +161,44 @@ export default function Settings() {
         </p>
       </div>
 
-      <button onClick={logout} className="btn" style={{ background: 'rgba(244,63,94,0.1)', color: '#F43F5E', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+      <div className="glass-card" style={{ padding: '20px', marginBottom: '20px', borderColor: 'var(--danger)' }}>
+        <h3 style={{ margin: 0, marginBottom: '15px', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--danger)' }}>
+          <AlertTriangle size={18} /> Danger Zone
+        </h3>
+        <p className="text-muted" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5', marginBottom: '15px' }}>
+          Factory Reset will permanently delete your account, all your transactions, and settings from this device and the database.
+        </p>
+        <button onClick={() => setShowFactoryReset(true)} className="btn" style={{ background: 'rgba(244,63,94,0.1)', color: 'var(--danger)', width: '100%', padding: '10px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <Trash2 size={18} /> Factory Reset
+        </button>
+      </div>
+
+      <button onClick={logout} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
         <LogOut size={20} /> Log Out
       </button>
+
+      {showFactoryReset && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div className="glass-card" style={{ maxWidth: '400px', width: '100%', border: '1px solid var(--danger)' }}>
+            <h2 style={{ margin: '0 0 15px 0', color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <AlertTriangle size={24} /> Warning!
+            </h2>
+            <p className="text-muted" style={{ fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
+              Are you absolutely sure you want to Factory Reset? 
+              <br/><br/>
+              This action <strong>CANNOT</strong> be undone. All your financial history, profile details, and account will be permanently deleted. You will need to create a new account to use the app again.
+            </p>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => setShowFactoryReset(false)} className="btn btn-outline" style={{ flex: 1 }}>
+                Cancel
+              </button>
+              <button onClick={handleFactoryReset} className="btn" style={{ flex: 1, background: 'var(--danger)', color: '#fff' }}>
+                Yes, Delete All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

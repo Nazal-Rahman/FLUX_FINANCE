@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, History, BarChart2, Coins, Settings } from 'lucide-react';
+import { LayoutDashboard, History, BarChart2, Coins, Settings, Target } from 'lucide-react';
 
 export default function BottomNav() {
   const navItems = [
@@ -8,6 +8,7 @@ export default function BottomNav() {
     { to: '/timeline', icon: <History size={22} />, label: 'Timeline' },
     { to: '/reports', icon: <BarChart2 size={22} />, label: 'Reports' },
     { to: '/vault', icon: <Coins size={22} />, label: 'Vault' },
+    { to: '/analyzer', icon: <Target size={22} />, label: 'Tracker' },
     { to: '/settings', icon: <Settings size={22} />, label: 'Settings' }
   ];
 
