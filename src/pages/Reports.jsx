@@ -10,12 +10,34 @@ export default function Reports() {
   const PIE_COLORS = ['#F43F5E', '#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EC4899', '#14B8A6', '#6366F1'];
 
   useEffect(() => {
-    // Attempt to generate Sunday report automatically when viewing reports
-    LocalDB.generateSundayReport();
-    setReports(LocalDB.getWeeklyReports().sort((a, b) => new Date(b.generationDate) - new Date(a.generationDate)));
+    const txs = LocalDB.getTransactions();
+
+    // Dynamically calculate weekly reports (Monday to Sunday)
+    const weeklyMap = {};
+    txs.forEach(tx => {
+      const d = new Date(tx.date);
+      const sunday = new Date(d);
+      sunday.setDate(d.getDate() + ((7 - d.getDay()) % 7));
+      sunday.setHours(23, 59, 59, 999);
+      
+      const weekId = `Week Ending ${sunday.toLocaleDateString()}`;
+      if (!weeklyMap[weekId]) {
+        weeklyMap[weekId] = {
+          id: weekId,
+          totalGain: 0,
+          totalLoss: 0,
+          generationDate: sunday.toISOString() // for sorting
+        };
+      }
+      
+      if (tx.type === 'income') weeklyMap[weekId].totalGain += tx.amount;
+      else weeklyMap[weekId].totalLoss += tx.amount;
+    });
+
+    const dynamicReports = Object.values(weeklyMap).sort((a, b) => new Date(b.generationDate) - new Date(a.generationDate));
+    setReports(dynamicReports);
 
     // Calculate Intelligent Metrics
-    const txs = LocalDB.getTransactions();
     const allTimeInc = txs.filter(t => t.type === 'income').reduce((a, b) => a + b.amount, 0);
     
     const now = new Date();
